@@ -3,5 +3,3 @@
 #
 # Note: You may not slant the container and n is at least 2.
 
-#def maxArea(self, height: List[int]) -> int:
-    
