@@ -128,3 +128,47 @@ class Solution:
 
 (Python 莫得灵魂)
 
+
+
+### 面试题6 从尾到头打印链表
+
+#### 题目描述
+
+输入一个链表，按链表从尾到头的顺序返回一个ArrayList。
+
+解法：
+
+1. 从头到尾遍历链表入栈，然后依次遍历栈，打印元素
+
+```python
+class Solution:
+    # 返回从尾部到头部的列表值序列，例如[1,2,3]
+    def printListFromTailToHead(self, listNode):
+        # write code here
+        stack = []
+        if listNode is None:
+            return stack
+        while listNode:
+            stack.append(listNode.val)
+            print(listNode.val)
+            listNode = listNode.next
+        return stack[::-1]
+```
+
+
+
+2. 递归：每访问一个节点的时候，先递归输出后面的节点，再输出它本身
+
+```python
+class Solution:
+    # 返回从尾部到头部的列表值序列，例如[1,2,3]
+    def printListFromTailToHead(self, listNode):
+        # write code here
+        stack = []
+        if listNode is None:
+            return stack
+        def printlist(listNode):
+            if listNode.next:
+                return printlist(listNode.next)
+```
+
