@@ -1,5 +1,19 @@
-# problem desciption
-# Given n non-negative integers a1, a2, ..., an , where each represents a point at coordinate (i, ai). n vertical lines are drawn such that the two endpoints of line i is at (i, ai) and (i, 0). Find two lines, which together with x-axis forms a container, such that the container contains the most water.
-#
-# Note: You may not slant the container and n is at least 2.
+class ListNode:
+    def __init__(self, x):
+        self.val = x
+        self.next = None
 
+class Solution:
+    # 返回从尾部到头部的列表值序列，例如[1,2,3]
+    def printListFromTailToHead(self, listNode):
+        # write code here
+        stack = []
+        if listNode is None:
+            return stack
+        def printlist(listNode):
+            if listNode.next:
+                return printlist(listNode.next)
+
+sol = Solution()
+L = {67,0,24,58}
+print(sol.printListFromTailToHead(L))
