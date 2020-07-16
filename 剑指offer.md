@@ -232,3 +232,46 @@ class Solution:
 
 给定一个二叉树和其中的一个结点，请找出中序遍历顺序的下一个结点并且返回。注意，树中的结点不仅包含左右子结点，同时包含指向父结点的指针。
 
+**解法：**
+
+如果节点有右子树，那么右子树的最坐节点就是下一个节点。
+
+如果节点没有右子树
+
+- 情况1: 它是父节点的左子节点，那么它的父节点就是下一个节点
+- 情况2: 它是父节点的右节点，那么需要一直遍历父节点直到遇到作为左节点的父节点，那么这个节点的父节点就是下一个节点
+
+```python
+# -*- coding:utf-8 -*-
+# class TreeLinkNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+#         self.next = None
+class Solution:
+    def GetNext(self, pNode):
+        # write code here
+        if pNode==None:
+            return None
+        if pNode.right!=None:
+            left1 = pNode.right
+            while(left1.left!=None):
+                left1 = left1.left
+            return left1
+        elif pNode.next!=None:
+            current = pNode
+            parent = pNode.next
+            while(parent!=None and current == current.next.right ):
+                current = parent
+                parent = parent.next
+            return parent
+
+
+
+```
+
+
+
+
+
