@@ -301,3 +301,100 @@ class Solution:
         return self.stack2.pop()
 ```
 
+
+
+问题二 两个队列实现栈： 方法相同
+
+
+
+___
+
+### 递归和循环
+
+### 面试题10: 斐波那契数列
+
+#### 题目描述
+
+大家都知道斐波那契数列，现在要求输入一个整数n，请你输出斐波那契数列的第n项（从0开始，第0项为0，第1项是1）。
+
+n<=39
+
+gg解法
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def Fibonacci(self, n):
+        # write code here
+        if n<=0:
+            return 0
+        elif n==1:
+            return 1
+        return self.Fibonacci(n-1)+self.Fibonacci(n-2)
+```
+
+dp 解法：
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def Fibonacci(self, n):
+        # write code here
+        if n==0:
+            return 0
+        elif n==1:
+            return 1
+        bc0 = 0
+        bc1 = 1
+        i = 2
+        while(i<=n):
+            fn = bc0+bc1
+            i+=1
+            bc0=bc1
+            bc1=fn
+        return fn
+
+```
+
+题目二： 青蛙跳台阶问题
+
+#### 题目描述
+
+一只青蛙一次可以跳上1级台阶，也可以跳上2级。求该青蛙跳上一个n级的台阶总共有多少种跳法（先后次序不同算不同的结果）。
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def jumpFloor(self, number):
+        # write code here
+        if number==0:
+            return 0
+        if number==1:
+            return 1
+        if number==2:
+            return 2
+        bc0 = 0
+        bc1 = 1
+        bc2 = 2
+        i = 3
+        while(i<=number):
+            fn = bc2+bc1
+            i+=1
+            bc1=bc2
+            bc2=fn
+        return fn
+            
+```
+
+
+
+题目三： 放瓷砖
+
+
+
+___
+
+### 查找和排序
+
+### 面试题11：旋转数组的最小数字
+
