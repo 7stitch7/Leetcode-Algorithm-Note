@@ -435,3 +435,92 @@ class Solution:
         return rotateArray[mid]
 ```
 
+
+
+### 面试题12: 矩阵中的路径
+
+#### 题目描述
+
+请设计一个函数，用来判断在一个矩阵中是否存在一条包含某字符串所有字符的路径。路径可以从矩阵中的任意一个格子开始，每一步可以在矩阵中向左，向右，向上，向下移动一个格子。如果一条路径经过了矩阵中的某一个格子，则该路径不能再进入该格子。 例如 \begin{bmatrix} a & b & c &e \\ s & f & c & s \\ a & d & e& e\\ \end{bmatrix}\quad⎣⎡*a**s**a**b**f**d**c**c**e**e**s**e*⎦⎤ 矩阵中包含一条字符串"bcced"的路径，但是矩阵中不包含"abcb"路径，因为字符串的第一个字符b占据了矩阵中的第一行第二个格子之后，路径不能再次进入该格子。
+
+**回溯法：**
+
+回溯法（探索与回溯法）是一种选优搜索法，又称为试探法，按选优条件向前搜索，以达到目标。但当探索到某一步时，发现原先选择并不优或达不到目标，就退回一步重新选择，这种走不通就退回再走的技术为回溯法，而满足回溯[条件](https://baike.baidu.com/item/条件/1783021)的某个[状态](https://baike.baidu.com/item/状态/33204)的点称为“回溯点”。在探寻下一步是否可以走通时，可以使用递归。
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def hasPath(self, matrix, rows, cols, path):
+        # write code here
+        if matrix==None and rows<=0 and cols<=0 and path == None:
+            return False
+        visited = [0]*(rows*cols)
+        pathlength = 0
+        for row in range(rows):
+            for col in range(cols):
+                if self.hasPathCore(matrix, rows, cols, row, col, path,visited, pathlength):
+                    return True
+        return False
+    def hasPathCore(self,matrix, rows, cols, row, col, path ,visited, pathlength):
+        if len(path) == pathlength:
+            return True
+        hasPath = False
+        if row>=0 and row<rows and col>=0 and col<cols and matrix[row*cols+col]==path[pathlength] and visited[row*cols+col]==0:
+            pathlength +=1
+            visited[row*cols+col]=1
+            hasPath = self.hasPathCore(matrix, rows, cols, row+1, col, path,visited, pathlength) or \
+                        self.hasPathCore(matrix, rows, cols, row, col+1, path,visited, pathlength) or \
+                        self.hasPathCore(matrix, rows, cols, row-1, col, path,visited, pathlength) or \
+                        self.hasPathCore(matrix, rows, cols, row, col-1, path,visited, pathlength)
+            if not hasPath:
+                pathlength-=1
+                visited[row*cols+col]=0
+        return hasPath
+
+
+```
+
+
+
+### 面试题13: 机器人的运动范围
+
+#### 题目描述
+
+地上有一个m行和n列的方格。一个机器人从坐标0,0的格子开始移动，每一次只能向左，右，上，下四个方向移动一格，但是不能进入行坐标和列坐标的数位之和大于k的格子。 例如，当k为18时，机器人能够进入方格（35,37），因为3+5+3+7 = 18。但是，它不能进入方格（35,38），因为3+5+3+8 = 19。请问该机器人能够达到多少个格子？
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def movingCount(self, threshold, rows, cols):
+        # write code here
+        markmatrix = [False] * (rows * cols)
+        count = self.GetNum(threshold, rows, cols, 0, 0, markmatrix)
+        return count
+
+    def GetNum(self, threshold, rows, cols, row, col, markmatrix):
+        count = 0
+
+        if self.GetSum(threshold, rows, cols, row, col, markmatrix):
+            markmatrix[row * cols + col] = True
+            count = 1 + self.GetNum(threshold, rows, cols, row - 1, col, markmatrix) + \
+                    self.GetNum(threshold, rows, cols, row, col - 1, markmatrix) + \
+                    self.GetNum(threshold, rows, cols, row + 1, col, markmatrix) + \
+                    self.GetNum(threshold, rows, cols, row, col + 1, markmatrix)
+        return count
+
+    def GetSum(self, threshold, rows, cols, row, col, markmatrix):
+        if row >= 0 and row < rows and col >= 0 and col < cols and self.getDigit(row) + self.getDigit(
+                col) <= threshold and not markmatrix[row * cols + col]:
+            return True
+        return False
+
+    def getDigit(self, number):
+        sumNum = 0
+        while number > 0:
+            sumNum += number % 10
+            number = number // 10
+        return sumNum
+```
+
+
+
