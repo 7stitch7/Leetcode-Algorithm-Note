@@ -398,3 +398,40 @@ ___
 
 ### 面试题11：旋转数组的最小数字
 
+#### 题目描述
+
+把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。
+输入一个非递减排序的数组的一个旋转，输出旋转数组的最小元素。
+例如数组{3,4,5,1,2}为{1,2,3,4,5}的一个旋转，该数组的最小值为1。
+NOTE：给出的所有元素都大于0，若数组大小为0，请返回0。
+
+解法：
+
+寻找最小数字最简单的方法自然是以O(n)的复杂度遍历，但没有利用好旋转数组的特点。可以观察到，旋转数组的第一个元素总是比最后一个大，从中间选择一个元素，如果比第一个元素小，那么一定在正常排序的数组里，反之则在旋转的数组里，那么就可以利用二分法，用O(logn)找到最小值
+
+corner case：输入未旋转的数组将不符合判断条件,考虑[1, 0, 0, 1]这种数据，只能顺序查找
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def minNumberInRotateArray(self, rotateArray):
+        # write code here
+        start = 0
+        end = len(rotateArray)-1
+        if end == -1:
+            return False
+        if rotateArray[start]<rotateArray[end]:
+            return rotateArray[0]
+        while(start!=end):
+            if end-start==1:
+                return rotateArray[end]
+            mid = (start+end)/2
+            if rotateArray[start]==rotateArray[mid]==rotateArray[end]:
+              return min(rotateArray)
+            if rotateArray[start]<=rotateArray[mid]:
+                start = mid
+            if rotateArray[end]>=rotateArray[mid]:
+                end = mid
+        return rotateArray[mid]
+```
+
