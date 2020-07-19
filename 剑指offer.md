@@ -524,7 +524,11 @@ class Solution:
 
 
 
-### 动态规划与贪婪算法
+
+
+___
+
+### 动态规划与贪心算法
 
 从上到下分析问题，从下到上求解问题
 
@@ -589,6 +593,8 @@ class Solution:
 
 ```
 
+___
+
 ### 位运算
 
 位运算：除法的效率远低于位运算
@@ -598,6 +604,178 @@ class Solution:
 #### 题目描述
 
 输入一个整数，输出该数32位二进制表示中1的个数。其中负数用补码表示。
+
+**解法：**
+
+**把一个整数减1再与原来的数做位运算，得到的结果相当于把该整数二进制中最右边的1变成了0**
+
+如果一个整数不为0，那么这个整数至少有一位是1。如果我们把这个整数减1，那么原来处在整数最右边的1就会变为0，原来在1
+
+后面的所有的0都会变成1(如果最右边的1后面还有0的话)。其余所有位将不会受到影响。
+
+举个例子：一个二进制数1100，从右边数起第三位是处于最右边的一个1。减去1后，第三位变成0，它后面的两位0变成了1，
+
+而前面的1保持不变，因此得到的结果是1011.我们发现减1的结果是把最右边的一个1开始的所有位都取反了。这个时候如果我们
+
+再把原来的整数和减去1之后的结果做与运算，从原来整数最右边一个1那一位开始所有位都会变成0。如1100&1011=1000.也就是
+
+说，把一个整数减去1，再和原整数做与运算，会把该整数最右边一个1变成0.那么一个整数的二进制有多少个1，就可以进行多少
+
+次这样的操作。
+
+但是负数使用补码表示的，对于负数，最高位为1，而负数在计算机是以补码存在的，往右移，符号位不变，符号位1往右移，
+
+最终可能会出现全1的情况，导致死循环。与0xffffffff相与，就可以消除负数的影响
+
+
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def NumberOf1(self, n):
+        # write code here
+        count = 0
+        if n<0:
+            n = n & 0xffffffff
+        while n:
+            count += 1
+            n = n & (n-1)
+        return count
+```
+
+
+
+**相关题目**
+
+1. 判断一个整数是不是2的整数次方
+   - 2的整数次方意味着二进制中只有一个1
+2. 输入整数m和n，需要改变m的二进制中的几位才能变为n
+   - 1. 求两个数的异或 2. 统计异或结果中1的个数
+
+
+
+___
+
+## 高质量的代码
+
+### 面试题16: 数值的整数次方
+
+#### 题目描述
+
+给定一个double类型的浮点数base和int类型的整数exponent。求base的exponent次方。
+
+保证base和exponent不同时为0
+
+**注意**: 要考虑exponent为0和为负数的情况
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def Power(self, base, exponent):
+        # write code here
+        invalid = False
+        if base == 0 and exponent <0:
+            invalid = True
+            return False
+        if exponent<0:
+            result = 1/self.PowerwithUnsignedExponent(base,-exponent)
+            return result
+        if exponent>=0:
+            return self.PowerwithUnsignedExponent(base,exponent)
+    
+    def PowerwithUnsignedExponent(self, base, exponent):
+        if exponent==0:
+            return 1
+        if exponent==1:
+            return base
+        result=self.PowerwithUnsignedExponent(base, exponent//2)
+        result*=result
+        if exponent&0x1==1:
+            result*=base
+        return result
+```
+
+最优解：考虑到base^(n/2)*base^(n/2) = base^2, 所以我们可以递归地求base^n, 而不是使用循环
+
+
+
+### 面试题17: 打印从1到最大的n位数
+
+陷阱：必须考虑n的数量级
+
+**解法：** 在字符串上模拟数字加法的解法
+
+缺点：代码很长
+
+**优化：** 用递归实现全排列，来替代字符串加法
+
+
+
+### 面试题18: 删除链表中的节点
+
+**题目一：**
+
+在O(1)时间内删除一个已知的节点
+
+**解法：**复制后一个节点的值给要删除的节点，然后删除后一个节点
+
+PS: 当需要删除的节点是尾节点时，没有下一个节点，只能遍历找到前序节点
+
+```python
+def delete_node(link, node):
+    if node == link:  # 只有一个结点
+        del node
+    if node.next is None:  # node是尾结点
+        while link:
+            if link.next == node:
+                link.next = None
+            link = link.next
+    else:
+        node.val = node.next.val
+        n_node = node.next
+        node.next = n_node.next
+        del n_node
+```
+
+
+
+**题目二：**
+
+在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。 例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
+
+解法：从头遍历，寻找重复的节点，当遇到重复节点时，可以看作头节点重复的子链表，可以递归地删除子链表中的重复节点
+
+```python
+# -*- coding:utf-8 -*-
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+class Solution:
+    def deleteDuplication(self, pHead):
+        # write code here
+        if pHead is None or pHead.next is None:
+            return pHead
+        head1 = pHead.next
+        if head1.val != pHead.val:
+            pHead.next = self.deleteDuplication(pHead.next)
+        else:
+            while pHead.val == head1.val and head1.next is not None:
+                head1 = head1.next
+            if head1.val != pHead.val:
+                pHead = self.deleteDuplication(head1)
+            else:
+                return None
+        return pHead
+```
+
+
+
+### 面试题19: 正则表达式匹配
+
+#### 题目描述
+
+请实现一个函数用来匹配包括'.'和'*'的正则表达式。模式中的字符'.'表示任意一个字符，而'*'表示它前面的字符可以出现任意次（包含0次）。 在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串"aaa"与模式"a.a"和"ab*ac*a"匹配，但是与"aa.a"和"ab*a"均不匹配
 
 
 
