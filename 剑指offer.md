@@ -524,3 +524,80 @@ class Solution:
 
 
 
+### 动态规划与贪婪算法
+
+从上到下分析问题，从下到上求解问题
+
+### 面试题14: 剪绳子
+
+#### 题目描述
+
+给你一根长度为n的绳子，请把绳子剪成整数长的m段（m、n都是整数，n>1并且m>1，m<=n），每段绳子的长度记为k[1],...,k[m]。请问k[1]x...xk[m]可能的最大乘积是多少？例如，当绳子的长度是8时，我们把它剪成长度分别为2、3、3的三段，此时得到的最大乘积是18。
+
+**解法一：** 动态规划 f(n) = max(f(i)*f(n-i))
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def cutRope(self, number):
+        # write code here
+        if number<2:
+            return False
+        if number==2:
+            return 1
+        if number==3:
+            return 2
+        product = [0]*(number+1)
+        product[0]=0
+        product[1]=1
+        product[2]=2
+        product[3]=3
+        max_product = 0
+        for i in range(4,number+1):
+            max_projuct = 0
+            for j in range(1,i//2+1):
+                pro = product[j]*product[i-j]
+                if pro > max_product:
+                    max_product = pro
+                product[i]=max_product
+        return product[number]
+```
+
+PS: 当剪完后的数字小于4时，它们继续剪下去的结果会比它本身小，比如3剪完后的最大乘积是2，但3本身比2大，所以max_product 只保留3
+
+**解法二：** 贪心算法
+
+当n>= 5时，尽可能剪长度为3； 当剩下长度为4时，剪成2
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def cutRope(self, number):
+        # write code here
+        if number<2:
+            return False
+        if number==2:
+            return 1
+        if number==3:
+            return 2
+        number3 = number//3
+        if number-3*number3==1:
+            number3-=1
+        number2=(number-3*number3)//2
+        return 3**number3*2**number2
+
+
+```
+
+### 位运算
+
+位运算：除法的效率远低于位运算
+
+### 面试题15: 二进制中1的个数
+
+#### 题目描述
+
+输入一个整数，输出该数32位二进制表示中1的个数。其中负数用补码表示。
+
+
+
