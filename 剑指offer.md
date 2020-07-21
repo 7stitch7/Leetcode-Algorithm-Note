@@ -658,6 +658,10 @@ ___
 
 ## 高质量的代码
 
+### 代码的完整性
+
+___
+
 ### 面试题16: 数值的整数次方
 
 #### 题目描述
@@ -807,4 +811,154 @@ class Solution:
 ```
 
 
+
+### 面试题20: 表示数值的字符串
+
+#### 题目描述
+
+请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。例如，字符串"+100","5e2","-123","3.1416"和"-1E-16"都表示数值。 但是"12e","1a3.14","1.2.3","+-5"和"12e+4.3"都不是。
+
+**解法：** 分开讨论整数部分A, 小数部分B，指数部分C. 
+
+- A, C都是可能以‘+’‘-’开头的0～9的数位串
+- B只可以是以'.'开头的0～9的数位串
+
+
+
+### 面试题21: 调整数组顺序使奇数位于偶数前
+
+#### 题目描述
+
+输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前半部分，所有的偶数位于数组的后半部分。
+
+**解法：** 两个指针从首尾开始扫描，如果发现第一个指针指向偶数，第二个指向奇数，则交换它们的位置
+
+PS: 为了更好的扩展性，可以把判断奇偶部分抽取出来
+
+```python
+def reorder(nums, func):
+    left, right = 0, len(nums) - 1
+    while left < right:
+        while not func(nums[left]):
+            left += 1
+        while func(nums[right]):
+            right -= 1
+        if left < right:
+            nums[left], nums[right] = nums[right], nums[left]
+
+
+def is_even(num):
+    return (num & 1) == 0
+```
+
+
+
+### 3.4 代码的鲁棒性
+
+___
+
+### 面试题22: 链表中倒数第k个节点
+
+#### 题目描述
+
+输入一个链表，输出该链表中倒数第k个结点。
+
+**解法：** 快慢指针，中间间隔k-1
+
+Corner case: 
+
+1. 空链表
+2. k<=0
+3. k>链表长度
+
+
+
+```python
+# -*- coding:utf-8 -*-
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def FindKthToTail(self,head,k):
+        # write code here
+        FirstNode = head
+        BindNode = head
+        if not head:
+            return None
+        if k<=0:
+            return None
+        for i in range(k-1):
+            if BindNode.next:
+                BindNode = BindNode.next
+            else:
+                return None
+        while(BindNode.next!=None):
+            FirstNode = FirstNode.next
+            BindNode = BindNode.next
+        return FirstNode
+```
+
+
+
+
+
+### 面试题23: 链表中环的入口节点
+
+#### 题目描述
+
+给一个链表，若其中包含环，请找出该链表的环的入口结点，否则，输出null。
+
+**解法：**
+
+ 1. 确定是否有环： 一个指针一次走一步，另一个一次走两步，如果快指针追得上慢指针，则有环
+
+			2. 确定入环口：设置距离为n的快慢指针，当n为入口节点距离时，慢指针会与快指针在入口节点正好相遇
+   			3. 利用步骤一确定环中节点的个数：快慢指针每次相差1，当它们相遇时，相差的间隔n，就相当于慢指针走的路程
+
+```python
+# -*- coding:utf-8 -*-
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+class Solution:
+    def EntryNodeOfLoop(self, pHead):
+        # write code here
+        if pHead==None or pHead.next==None or pHead.next.next==None:
+            return None
+        if pHead==pHead.next:
+            return pHead
+        slow = pHead
+        fast = pHead
+        while slow!=None and fast!=None:
+            slow = slow.next
+            fast = fast.next.next
+            if slow==fast:
+                break
+        fast=pHead #当找到第一个相遇点时，间隔为k，只要慢指针往前走k步，每次一步，就会和从表头开始的新指针相遇
+        while slow!=fast:
+            slow=slow.next
+            fast=fast.next
+        return fast
+```
+
+
+
+
+
+### 面试题24: 反转链表
+
+#### 题目描述
+
+输入一个链表，反转链表后，输出新链表的表头。
+
+
+
+### 面试题25: 合并两个排序的链表
+
+#### 题目描述
+
+输入两个单调递增的链表，输出两个链表合成后的链表，当然我们需要合成后的链表满足单调不减规则。
 
