@@ -1240,25 +1240,136 @@ class Solution:
 
 
 
-
-
-
-
-### 面试题32: 
+### 面试题32: 从上到下打印二叉树
 
 #### 题目描述
 
+从上往下打印出二叉树的每个节点，同层节点从左至右打印。
+
+解法：每打印一个节点，将它的子节点放到队列的最后面
+
+```python
+# -*- coding:utf-8 -*-
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None                              
+#         self.right = None
+class Solution:
+    # 返回从上到下每个节点值列表，例：[1,2,3]
+    def PrintFromTopToBottom(self, root):
+        # write code here
+        l=[]
+        if not root:
+            return []
+        q=[root]
+        while len(q):
+            t=q.pop(0)
+            l.append(t.val)
+            if t.left:
+                q.append(t.left)
+            if t.right:
+                q.append(t.right)
+        return l       
+```
 
 
-### 面试题33: 
+
+
+
+### 问题二: 之字形打印二叉树
 
 #### 题目描述
 
+请实现一个函数按照之字形打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右至左的顺序打印，第三行按照从左到右的顺序打印，其他行以此类推。
+
+解法：使用两个栈存放子节点
+
+```python
+# -*- coding:utf-8 -*-
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+class Solution:
+    def Print(self, pRoot):
+        # write code here
+        result = []
+        stack = [pRoot]
+        level = 1
+         
+        while len(stack) > 0:
+            ns = []
+            rs = []
+            for i in stack:
+                if i != None:
+                    rs.append(i.val)
+                    if i.left != None:
+                        ns.append(i.left)
+                    if i.right != None:
+                        ns.append(i.right)
+                         
+            if level % 2 == 0:
+                rs.reverse()
+            if len(rs) > 0:
+                result.append(rs)
+                 
+            stack = ns
+            level += 1
+        return result
+```
 
 
-### 面试题34: 
+
+
+
+### 面试题33: 二叉搜索树的后序遍历序列
 
 #### 题目描述
+
+输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。如果是则输出Yes,否则输出No。假设输入的数组的任意两个数字都互不相同。
+
+解法：用递归解决，后序遍历，最后一个元素是根节点，前一部分一定比根节点小，后一部分一定比根节点大
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def VerifySquenceOfBST(self, sequence):
+        # write code here
+        if len(sequence)==0:
+            return False
+        root = sequence[-1]
+        i = 0
+        while sequence[i]<root:
+            i+=1
+        j=i
+        while j<len(sequence)-1:
+            if sequence[j]<root:
+                return False
+            j+=1
+        leftseq = sequence[:i]
+        rightseq = sequence[i:len(sequence)-1]
+        left=True
+        if len(leftseq)>0:
+            left = self.VerifySquenceOfBST(leftseq)
+        right=True
+        if len(rightseq)>0:
+            right = self.VerifySquenceOfBST(rightseq)
+        return left and right
+```
+
+
+
+
+
+### 面试题34: 二叉树中和为某一值的路径
+
+#### 题目描述
+
+输入一颗二叉树的根节点和一个整数，按字典序打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。
+
+解法：深度优先搜索变形
 
 
 
