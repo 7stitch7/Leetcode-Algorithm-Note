@@ -1218,6 +1218,28 @@ class Solution:
 
 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否可能为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如序列1,2,3,4,5是某栈的压入顺序，序列4,5,3,2,1是该压栈序列对应的一个弹出序列，但4,3,5,1,2就不可能是该压栈序列的弹出序列。（注意：这两个序列的长度是相等的）
 
+解法：使用一个辅助栈，逐一压入pushV,并与popV依次比较，当下一个弹出的数字在栈顶时，直接弹出，不在栈顶时，继续压入直到栈顶数字与popV相等，如果全部压入后仍然没有相等的栈顶数字，则return False
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def IsPopOrder(self, pushV, popV):
+        # write code here
+        if not pushV or len(pushV) != len(popV):
+            return False
+        stack = []
+        for i in pushV:
+            stack.append(i)
+            while len(stack) and stack[-1] == popV[0]:
+                stack.pop()
+                popV.pop(0)
+        if len(stack):
+            return False
+        return True
+```
+
+
+
 
 
 
