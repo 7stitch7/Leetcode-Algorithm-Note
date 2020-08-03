@@ -1371,6 +1371,35 @@ class Solution:
 
 解法：深度优先搜索变形
 
+```python
+def find_path(tree, num):
+    ret = []
+    if not tree:
+        return ret
+    path = [tree]
+    sums = [tree.val]
+
+    def dfs(tree):
+        if tree.left:
+            path.append(tree.left)
+            sums.append(sums[-1]+tree.left.val)
+            dfs(tree.left)
+        if tree.right:
+            path.append(tree.right)
+            sums.append(sums[-1] + tree.right.val)
+            dfs(tree.right)
+        if not tree.left and not tree.right:
+            if sums[-1] == num:
+                ret.append([p.val for p in path])
+        path.pop()
+        sums.pop()
+
+    dfs(tree)
+    return ret
+```
+
+
+
 
 
 ### 面试题35: 
