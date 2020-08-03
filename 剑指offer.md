@@ -787,7 +787,7 @@ class Solution:
    	- 状态1: 如果第一个字符匹配（包括与"."匹配），那么都向后移动一个字符
  - 当第二个字符是'*'时，
    	- 状态2: 如果第一个字符不匹配，那么‘*’可以使pattern中第一个字符出现0次，pattern向后移动两个字符
-   	- 状态3: 如果第一个字符匹配，那么‘*’可以使pattern中第一个字符只出现1次，pattern向后移动两个字符，字符串向后移动一个字符
+      	- 状态3: 如果第一个字符匹配，那么‘*’可以使pattern中第一个字符只出现1次，pattern向后移动两个字符，字符串向后移动一个字符
    	- 状态4: 如果第一个字符匹配，那么‘*’可以使pattern中第一个字符只出现n次，字符串向后移动一个字符
 
 ```python
@@ -915,7 +915,7 @@ class Solution:
  1. 确定是否有环： 一个指针一次走一步，另一个一次走两步，如果快指针追得上慢指针，则有环
 
 			2. 确定入环口：设置距离为n的快慢指针，当n为入口节点距离时，慢指针会与快指针在入口节点正好相遇
-   			3. 利用步骤一确定环中节点的个数：快慢指针每次相差1，当它们相遇时，相差的间隔n，就相当于慢指针走的路程
+      			3. 利用步骤一确定环中节点的个数：快慢指针每次相差1，当它们相遇时，相差的间隔n，就相当于慢指针走的路程
 
 ```python
 # -*- coding:utf-8 -*-
@@ -954,6 +954,24 @@ class Solution:
 
 输入一个链表，反转链表后，输出新链表的表头。
 
+思路：需要考虑空链表，只有一个结点的链表，把前一个节点存下来
+
+```python
+def reverse_link(head):
+    if not head or not head.next:
+        return head
+    then = head.next
+    head.next = None
+    last = then.next
+    while then:
+        then.next = head
+        head = then
+        then = last
+        if then:
+            last = then.next
+    return head
+```
+
 
 
 ### 面试题25: 合并两个排序的链表
@@ -962,3 +980,290 @@ class Solution:
 
 输入两个单调递增的链表，输出两个链表合成后的链表，当然我们需要合成后的链表满足单调不减规则。
 
+注意：空链表的输入
+
+
+
+```python
+# -*- coding:utf-8 -*-
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+class Solution:
+    # 返回合并后列表
+    def Merge(self, pHead1, pHead2):
+        # write code here
+        if pHead1==None:
+            return pHead2
+        if pHead2==None:
+            return pHead1
+        mergenode = None
+        if pHead1.val<pHead2.val:
+            mergenode = pHead1
+            mergenode.next = self.Merge(pHead1.next,pHead2)
+        else:
+            mergenode = pHead2
+            mergenode.next = self.Merge(pHead1,pHead2.next)
+        return mergenode
+
+```
+
+
+
+### 面试题26: 树的子结构
+
+#### 题目描述
+
+输入两棵二叉树A，B，判断B是不是A的子结构。（ps：我们约定空树不是任意一个树的子结构）
+
+解法：用递归先找到根节点相同的点，如果找到，检查子节点是否一致，子节点以递归的方式，检查左右节点是否一致
+
+注意：需要考虑指针为空带来的结果
+
+
+
+```python
+# -*- coding:utf-8 -*-
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+class Solution:
+    def HasSubtree(self, pRoot1, pRoot2):
+        # write code here
+        result = False
+        if pRoot1!=None and pRoot2!=None:
+            if pRoot1.val==pRoot2.val:
+                result= self.DoseTree1HasTree2(pRoot1,pRoot2)
+            if result==False:
+                result= self.HasSubtree(pRoot1.left,pRoot2)
+            if result==False:
+                result= self.HasSubtree(pRoot1.right,pRoot2)
+        return result
+    def DoseTree1HasTree2(self,pRoot1,pRoot2):
+        if pRoot2==None:
+            return True
+        if pRoot1==None:
+            return False
+        if pRoot1.val!=pRoot2.val:
+            return False
+        return self.DoseTree1HasTree2(pRoot1.left,pRoot2.left) and self.DoseTree1HasTree2(pRoot1.right,pRoot2.right)
+
+```
+
+
+
+## 第4章 解决面试题的思路
+
+### 面试题27: 二叉树的镜像
+
+#### 题目描述
+
+操作给定的二叉树，将其变换为源二叉树的镜像。
+
+解法：前序遍历，并交换左右子节点
+
+```python
+# -*- coding:utf-8 -*-
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+class Solution:
+    # 返回镜像树的根节点
+    def Mirror(self, root):
+        # write code here
+        if root != None:
+            root.left,root.right = root.right,root.left
+            self.Mirror(root.left)
+            self.Mirror(root.right)
+```
+
+
+
+### 面试题28: 对称的二叉树
+
+#### 题目描述
+
+请实现一个函数，用来判断一棵二叉树是不是对称的。注意，如果一个二叉树同此二叉树的镜像是同样的，定义其为对称的。
+
+解法：设计一种root-right-left的遍历方法，如果是对称的，则与前序遍历的结果一样
+
+```python
+# -*- coding:utf-8 -*-
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+class Solution:
+    def isSymmetrical(self, pRoot):
+        # write code here
+        if not pRoot:
+            return True
+        if pRoot.left and not pRoot.right:
+            return False
+        if not pRoot.left and pRoot.right:
+            return False
+        return self.is_same(pRoot.left,pRoot.right)
+    def is_same(self,p1,p2):
+        if not p1 and not p2:
+            return True
+        if (p1 and p2) and p1.val==p2.val:
+            return self.is_same(p1.left,p2.right) and self.is_same(p1.right,p2.left)
+        return False
+```
+
+
+
+### 面试题29: 顺时针打印矩阵
+
+#### 题目描述
+
+输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字，例如，如果输入如下4 X 4矩阵： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 则依次打印出数字1,2,3,4,8,12,16,15,14,13,9,5,6,7,11,10.
+
+解法：每一圈的开始位置总是坐上角元素[0, 0], [1, 1]...，圈最后结束的位置总是在中间 cols>start*2 and rows>start*2
+
+
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    # matrix类型为二维列表，需要返回列表
+    def printMatrix(self, matrix):
+        # write code here
+        if len(matrix)==0 or len(matrix[0])==0:
+            return None
+        rows = len(matrix)
+        cols = len(matrix[0])
+        start = 0
+        ret = []
+        while(cols>start*2 and rows>start*2):
+            self.PrintMatrixInCircle(matrix,rows,cols,start,ret)
+            start+=1
+        return ret
+    def PrintMatrixInCircle(self,matrix,rows,cols,start,ret):
+        endX=cols-1-start
+        endY=rows-1-start
+        i=start
+        # left->right
+        while(i<=endX):
+            ret.append(matrix[start][i])
+            i+=1
+        # top->bottom
+        if start<endY:
+            i = start+1
+            while(i<=endY):
+                ret.append(matrix[i][endX])
+                i+=1
+        # right->left
+        if start<endX and start<endY:
+            i = endX-1
+            while(i>=start):
+                ret.append(matrix[endY][i])
+                i-=1
+        # bottom->top
+        if start<endX and start<endY-1:
+            i=endY-1
+            while(i>=start+1):
+                ret.append(matrix[i][start])
+                i-=1
+                
+```
+
+
+
+
+
+### 面试题30: 包含min函数的栈
+
+#### 题目描述
+
+定义栈的数据结构，请在该类型中实现一个能够得到栈中所含最小元素的min函数（时间复杂度应为O（1））。
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+    def push(self, node):
+        # write code here
+        self.stack.append(node)
+        if not self.min_stack or node <= self.min_stack[-1]:
+            self.min_stack.append(node)
+    def pop(self):
+        # write code here
+        if self.stack[-1] == self.min_stack[-1]:
+            self.min_stack.pop()
+        self.stack.pop()
+    def top(self):
+        # write code here
+        return self.stack[-1]
+    def min(self):
+        # write code here
+        return self.min_stack[-1]
+```
+
+
+
+
+
+### 面试题31: 栈道压入、弹出序列
+
+#### 题目描述
+
+输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否可能为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如序列1,2,3,4,5是某栈的压入顺序，序列4,5,3,2,1是该压栈序列对应的一个弹出序列，但4,3,5,1,2就不可能是该压栈序列的弹出序列。（注意：这两个序列的长度是相等的）
+
+
+
+
+
+### 面试题32: 
+
+#### 题目描述
+
+
+
+### 面试题33: 
+
+#### 题目描述
+
+
+
+### 面试题34: 
+
+#### 题目描述
+
+
+
+### 面试题35: 
+
+#### 题目描述
+
+
+
+### 面试题36: 
+
+#### 题目描述
+
+
+
+### 面试题37: 
+
+#### 题目描述
+
+
+
+### 面试题38: 
+
+#### 题目描述
+
+
+
+### 面试题39: 
+
+#### 题目描述
