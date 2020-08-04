@@ -1402,27 +1402,181 @@ def find_path(tree, num):
 
 
 
-### 面试题35: 
+### 面试题35: 复杂链表的复制
 
 #### 题目描述
 
+输入一个复杂链表（每个节点中有节点值，以及两个指针，一个指向下一个节点，另一个特殊指针random指向一个随机节点），请对此链表进行深拷贝，并返回拷贝后的头结点。（注意，输出结果中请不要返回参数中的节点引用，否则判题程序会直接返回空）
+
+解法1: 使用哈希表记录特殊指针节点，空间换时间
+
+解法2: 直接将复制的节点链接到原节点的后面
+
+分为三步完成：
+
+一:复制每个结点，并把新结点放在老结点后面，如1->2,复制为1->1->2->2
+
+二:为每个新结点设置other指针
+
+三:把复制后的结点链表拆开
+
+```python
+# -*- coding:utf-8 -*-
+# class RandomListNode:
+#     def __init__(self, x):
+#         self.label = x
+#         self.next = None
+#         self.random = None
+class Solution:
+    # 返回 RandomListNode
+    def Clone(self, pHead):
+        # write code here
+        pClone = self.CloneNode(pHead)
+        pClone = self.ConnectSiblingNodes(pClone)
+        return self.ReconnectNodes(pClone)
+    
+    def CloneNode(self,pHead):
+        pNode = pHead
+        while(pNode):
+            pClone = RandomListNode(pNode.label)
+            pClone.next = pNode.next
+            pClone.random = None
+            pNode.next = pClone
+            pNode = pClone.next
+        return pHead
+    def ConnectSiblingNodes(self,pHead):
+        pNode = pHead
+        while(pNode):
+            pClone = pNode.next
+            if pNode.random:
+                pClone.random = pNode.random.next
+            pNode = pClone.next
+        return pHead
+    def ReconnectNodes(self,pHead):
+        pNode = pHead
+        pCloneHead = None
+        pCloneNode = None
+        if pNode:
+            pCloneHead = pCloneNode = pNode.next
+            pNode.next = pCloneHead.next
+            pNode = pNode.next
+        while pNode:
+            pCloneNode.next = pNode.next 
+            pCloneNode = pCloneNode.next
+            pNode.next = pCloneNode.next
+            pNode = pNode.next
+        return pCloneHead
+
+```
 
 
-### 面试题36: 
+
+### 面试题36: 二叉搜索树与双向链表
 
 #### 题目描述
 
+输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
+
+解法：中序遍历是从小到大遍历，父节点将链接左子树最大的节点和右子树最小的节点。自然地想到左右子树递归生成已经排序的双向链表，再链接上该父节点。
+
+```python
+# -*- coding:utf-8 -*-
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+class Solution:
+    def Convert(self, pRootOfTree):
+        if not pRootOfTree:
+            return pRootOfTree
+        if not pRootOfTree.left and not pRootOfTree.right:
+            return pRootOfTree
+        # 处理左子树
+        self.Convert(pRootOfTree.left)
+        left=pRootOfTree.left
+
+        # 连接根与左子树最大结点
+        if left:
+            while(left.right):
+                left=left.right
+            pRootOfTree.left,left.right=left,pRootOfTree
+
+        # 处理右子树
+        self.Convert(pRootOfTree.right)
+        right=pRootOfTree.right
+
+        # 连接根与右子树最小结点
+        if right:
+            while(right.left):
+                right=right.left
+            pRootOfTree.right,right.left=right,pRootOfTree
+            
+        while(pRootOfTree.left):
+            pRootOfTree=pRootOfTree.left
+        return pRootOfTree
+```
 
 
-### 面试题37: 
+
+### 面试题37: 序列化二叉树
 
 #### 题目描述
 
+请实现两个函数，分别用来序列化和反序列化二叉树
+
+二叉树的序列化是指：把一棵二叉树按照某种遍历方式的结果以某种格式保存为字符串，从而使得内存中建立起来的二叉树可以持久保存。序列化可以基于先序、中序、后序、层序的二叉树遍历方式来进行修改，序列化的结果是一个字符串，序列化时通过 某种符号表示空节点（#），以 ！ 表示一个结点值的结束（value!）。
+
+二叉树的反序列化是指：根据某种遍历顺序得到的序列化字符串结果str，重构二叉树。
 
 
-### 面试题38: 
+
+例如，我们可以把一个只有根节点为1的二叉树序列化为"1,"，然后通过自己的函数来解析回这个二叉树
+
+
+
+解法： 前序+中序构建二叉树只能适用于不重复数字的二叉树中，并且需要等序列全部读出时才能反序列化。把二叉树分为根节点，左子树，右子树，3个部分，递归地解决
+
+```python
+# -*- coding:utf-8 -*-
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+class Solution:
+    flag = -1
+    def Serialize(self, root):
+        # write code here
+        if not root:
+            return '#'
+        return str(root.val) + ',' + self.Serialize(root.left) + ',' + self.Serialize(root.right)
+    
+    def Deserialize(self, s):
+        # write code here
+        self.flag += 1
+        
+        l = s.split(',')
+        if self.flag >= len(s):
+            return None
+        
+        root = None
+        if l[self.flag] != '#':
+            root = TreeNode(int(l[self.flag]))
+            root.left = self.Deserialize(s)
+            root.right = self.Deserialize(s)
+        return root
+```
+
+
+
+
+
+### 面试题38: 字符串的排列
 
 #### 题目描述
+
+输入一个字符串,按字典序打印出该字符串中字符的所有排列。例如输入字符串abc,则按字典序打印出由字符a,b,c所能排列出来的所有字符串abc,acb,bac,bca,cab和cba。
 
 
 
