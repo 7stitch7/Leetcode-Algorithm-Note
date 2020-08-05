@@ -1578,8 +1578,269 @@ class Solution:
 
 输入一个字符串,按字典序打印出该字符串中字符的所有排列。例如输入字符串abc,则按字典序打印出由字符a,b,c所能排列出来的所有字符串abc,acb,bac,bca,cab和cba。
 
+解法：动态规划，原组合+新字符
+
+```python 
+# -*- coding:utf-8 -*-
+import itertools
+class Solution:
+    def Permutation(self, ss):
+        # write code here
+        if not ss:
+            return []
+        return sorted(list(set(map(''.join, itertools.permutations(ss)))))
+```
 
 
-### 面试题39: 
+
+
+
+### 面试题39: 数组中出现次数超过一半的数字
+
+#### 题目描述
+
+数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。例如输入一个长度为9的数组{1,2,3,2,2,2,5,4,2}。由于数字2在数组中出现了5次，超过数组长度的一半，因此输出2。如果不存在则输出0。
+
+解法：这个数字一定是中位数
+
+1. 快排：随机选取一个数字，扫描数组，比它大的放右边，小的放左边，如果下标n/2在左边，则在左边用递归找中位数。
+2. 扫描数组，记录每个数出现的次数
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def MoreThanHalfNum_Solution(self, numbers):
+        # write code here
+        if len(numbers)==0:
+            return 0
+        if len(numbers)==1:
+            return numbers[0]
+        if len(numbers)%2==1:
+            n = (len(numbers)+1)//2
+        else:
+            n = len(numbers)//2+1
+        times = {}
+        for i in range(len(numbers)):
+            try:
+                times[numbers[i]]+=1
+                if times[numbers[i]]>=n:
+                    return numbers[i]
+            except:
+                times[numbers[i]]=1
+        return 0
+
+
+```
+
+
+
+### 面试题40: 最小的k个数
+
+#### 题目描述
+
+输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4。
+
+解法：
+
+1. 同上一题一样，用快排 O(n), 可以修改输入数组时
+2. O(nlogk)，最大堆/红黑树， 使用heapq，该模块是一个最小堆，需要转化成最大堆，只要在入堆的时候把值取反就可以转化成最大堆(仅适用于数字)
+
+```python
+# -*- coding:utf-8 -*-
+import heapq
+
+class Solution:
+    def GetLeastNumbers_Solution(self, tinput, k):
+        if not tinput or not k or k > len(tinput):
+            return []
+        heapq.heapify(tinput)
+        return [heapq.heappop(tinput) for _ in xrange(k)]
+```
+
+
+
+
+
+### 面试题41: 数据流中的中位数
+
+#### 题目描述
+
+如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。我们使用Insert()方法读取数据流，使用GetMedian()方法获取当前读取数据的中位数。
+
+解法：AVL树，插入O(logn)，找到中位数O(1), 但AVL难以实现，用堆替代左右子树，右边最小堆的任意元素大于左边的最大堆
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def __init__(self):
+        self.st=[]
+    def Insert(self, num):
+        # write code here
+        self.st.append(num)
+    def GetMedian(self,st):
+        # write code here
+        self.st.sort()
+        n=len(self.st)
+        if n%2==1:
+            return self.st[n/2]
+        else:
+            return (self.st[n/2-1]+self.st[n/2])/2.0
+```
+
+
+
+### 面试题42: 连续子数组的最大和
+
+#### 题目描述
+
+HZ偶尔会拿些专业问题来忽悠那些非计算机专业的同学。今天测试组开完会后,他又发话了:在古老的一维模式识别中,常常需要计算连续子向量的最大和,当向量全为正数的时候,问题很好解决。但是,如果向量中包含负数,是否应该包含某个负数,并期望旁边的正数会弥补它呢？例如:{6,-3,-2,7,-15,1,2,2},连续子向量的最大和为8(从第0个开始,到第3个为止)。给一个数组，返回它的最大连续子序列的和，你会不会被他忽悠住？(子向量的长度至少是1)
+
+解法: 动态规划 max(pData[i],f(i-1)+pData[i])
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def FindGreatestSumOfSubArray(self, array):
+        # write code here
+        if len(array)==0:
+            return 0
+        if len(array)==1:
+            return array[0]
+        cumax=-10000
+        fx = [array[0]]*len(array)
+        for i in range(1,len(array)):
+            fx[i]= max(array[i],fx[i-1]+array[i])
+            if fx[i]>cumax:
+                cumax = fx[i]
+        return cumax
+```
+
+
+
+### 面试题43: 1～n整数中1出现的次数
+
+#### 题目描述
+
+求出1~13的整数中1出现的次数,并算出100~1300的整数中1出现的次数？为此他特别数了一下1~13中包含1的数字有1、10、11、12、13因此共出现6次,但是对于后面问题他就没辙了。ACMer希望你们帮帮他,并把问题更加普遍化,可以很快的求出任意非负整数区间中1出现的次数（从1 到 n 中1出现的次数）。
+
+解法： 获取每个位数区间上所有数中包含1的个数，然后分别对高位分析，然后递归的处理低位数
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def NumberOf1Between1AndN_Solution(self, n):
+        # write code here
+        if n < 10:
+            return 1 if n >= 1 else 0
+        digit = self.get_digits(n)  # 位数
+        low_nums = self.get_1_digits(digit-1)  # 最高位之前的1的个数
+        high = int(str(n)[0])  # 最高位
+        low = n - high * 10 ** (digit-1)  # 低位
+
+        if high == 1:
+            high_nums = low + 1  # 最高位上1的个数
+            all_nums = high_nums
+        else:
+            high_nums = 10 ** (digit - 1)
+            all_nums = high_nums + low_nums * (high - 1)  # 最高位大于1的话，统计每个多位数后面包含的1
+        return low_nums + all_nums + self.NumberOf1Between1AndN_Solution(low)
+    def get_digits(self,n):
+        # 求整数n的位数
+        ret = 0
+        while n:
+            ret += 1
+            n /= 10
+        return ret
+
+
+    def get_1_digits(self,n):
+        """
+        获取每个位数之间1的总数
+        :param n: 位数
+        """
+        if n <= 0:
+            return 0
+        if n == 1:
+            return 1
+        current = 9 * self.get_1_digits(n-1) + 10 ** (n-1)
+        return self.get_1_digits(n-1) + current
+
+
+```
+
+
+
+### 面试题44: 数字序列中某一位的数字
+
+#### 题目描述
+
+
+
+### 面试题45: 把数组排成最小的数
+
+#### 题目描述
+
+输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如输入数组{3，32，321}，则打印出这三个数字能排成的最小数字为321323。
+
+解法： 比较nm与mn的大小，为了避免内存溢出，先转化为string，拼接后进行比较
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def PrintMinNumber(self, numbers):
+        # write code here
+        if not numbers:
+            return ""
+        lmb = lambda n1, n2:int(str(n1)+str(n2))-int(str(n2)+str(n1))
+        array = sorted(numbers, cmp=lmb)
+        return ''.join([str(i) for i in array])
+        
+```
+
+
+
+### 面试题46: 把数字翻译成字符串
+
+#### 题目描述
+
+
+
+### 面试题47: 礼物的最大价值
+
+#### 题目描述
+
+
+
+### 面试题48: 最长不含重复字符的子字符串
+
+#### 题目描述
+
+
+
+### 面试题49: 丑数
+
+#### 题目描述
+
+
+
+### 面试题50: 第一个只出现一次的字符
+
+#### 题目描述
+
+
+
+### 面试题51: 数组中的逆序对
+
+#### 题目描述
+
+
+
+### 面试题52: 数组中出现次数超过一半的数字
+
+#### 题目描述
+
+
+
+### 面试题53: 数组中出现次数超过一半的数字
 
 #### 题目描述
