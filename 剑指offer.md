@@ -386,6 +386,20 @@ class Solution:
             
 ```
 
+一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级。求该青蛙跳上一个n级的台阶总共有多少种跳法。
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def jumpFloorII(self, number):
+        # write code here
+        if number==0:
+            return 0
+        if number==1:
+            return 1
+        return 2**(number-1)
+```
+
 
 
 题目三： 放瓷砖
@@ -1813,11 +1827,19 @@ class Solution:
 
 #### 题目描述
 
+在m*n的棋盘上，每一格都有一个不同价值的礼物，从左上角出发，每次只能向下或向右走一格，走到右下角是停止
+
+解法：动态规划，f(i,j)=max(f(i-1,j)+v(i,j),f(i,j-1)+v(i,j))
+
 
 
 ### 面试题48: 最长不含重复字符的子字符串
 
 #### 题目描述
+
+从一串字符串中找出最长不重复子字符串
+
+解法：动态规划
 
 
 
@@ -1825,11 +1847,61 @@ class Solution:
 
 #### 题目描述
 
+把只包含质因子2、3和5的数称作丑数（Ugly Number）。例如6、8都是丑数，但14不是，因为它包含质因子7。 习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑数。
+
+解法： 按顺序保存已知的丑数，下一个是已知丑数中某三个数乘以2，3，5中的最小值。
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def GetUglyNumber_Solution(self, index):
+        if (index <= 0):
+            return 0
+        uglyList = [1]
+        indexTwo = 0
+        indexThree = 0
+        indexFive = 0
+        for i in range(index-1):
+            newUgly = min(uglyList[indexTwo]*2, uglyList[indexThree]*3, uglyList[indexFive]*5)
+            uglyList.append(newUgly)
+            if (newUgly % 2 == 0):
+                indexTwo += 1
+            if (newUgly % 3 == 0):
+                indexThree += 1
+            if (newUgly % 5 == 0):
+                indexFive += 1
+        return uglyList[-1]
+ 
+```
+
 
 
 ### 面试题50: 第一个只出现一次的字符
 
 #### 题目描述
+
+在一个字符串(0<=字符串长度<=10000，全部由字母组成)中找到第一个只出现一次的字符,并返回它的位置, 如果没有则返回 -1（需要区分大小写）.（从0开始计数）
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def FirstNotRepeatingChar(self, s):
+        # write code here
+        dic = {}
+        for ch in s:
+            try:
+                if dic[ch]!=0:
+                    dic[ch]+=1
+            except:
+                dic[ch]=1
+        for i in range(len(s)):
+            ch = s[i]
+            if dic[ch]==1:
+                return i
+        return -1
+```
+
+
 
 
 
@@ -1837,14 +1909,498 @@ class Solution:
 
 #### 题目描述
 
+在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组,求出这个数组中的逆序对的总数P。并将P对1000000007取模的结果输出。 即输出P%1000000007
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def InversePairs(self, data):
+        # write code here
+        global count
+        count = 0
+        
+        def Mergefind(nums):
+            global count
+            Len=len(nums)
+            if Len<=1:
+                return nums
+            newnum=Len//2
+            left=Mergefind(nums[:newnum])
+            right=Mergefind(nums[newnum:])
+            leftindex=len(left)-1
+            rightindex=len(right)-1
+            result=[]
+            while leftindex>=0 and rightindex>=0:   #每组数组内部的逆序数已经在对应的递归中计数
+                if left[leftindex]>right[rightindex]:
+                    count+=(rightindex+1)
+                    result.insert(0,left[leftindex])
+                    leftindex-=1
+                else:
+                    result.insert(0,right[rightindex])
+                    rightindex-=1
+            if leftindex<0:
+                result=right[:rightindex+1]+result
+            else:
+                result=left[:leftindex+1]+result
+            return result  #返回数组用于下一层递归，count已累计
+        
+        Mergefind(data)
+        return count%1000000007
+```
 
 
-### 面试题52: 数组中出现次数超过一半的数字
+
+
+
+### 面试题52: 两个链表的第一个公共节点
+
+#### 题目描述
+
+输入两个链表，找出它们的第一个公共结点。（注意因为传入数据是链表，所以错误测试数据的提示是用其他方式显示的，保证传入数据是正确的）
+
+解法：
+
+1. 公共节点以后的数相同，将元素压入栈，公共部分相同且位于栈顶
+
+2. 遍历两个链表的长度，长的链表用快指针，短的用慢指针，在公共节点处相遇
+
+```python
+# -*- coding:utf-8 -*-
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+class Solution:
+    def FindFirstCommonNode(self, pHead1, pHead2):
+        # write code here
+        stack1=[]
+        stack2=[]
+        node1=pHead1
+        node2=pHead2
+        while(node1):
+            stack1.append(node1.val)
+            node1=node1.next
+        while node2:
+            if node2.val in stack1:
+                return node2
+            else:
+                node2 = node2.next
+
+```
+
+
+
+
+
+### 面试题53: 在排序数组中查找数字
+
+#### 题目描述
+
+统计一个数字在排序数组中出现的次数。
+
+解法： 二分法分别找开头和结尾
+
+```python
+class Solution:
+    def GetNumberOfK(self, data, k):
+        # write code here
+        start = 0
+        end = len(data)-1
+        num = 0
+        if len(data)<=0:
+            return 0
+        else:
+            first = self.GetFirst(data,start,end,k)
+            last = self.GetLast(data,start,end,k)
+            if first!=-1 and last!=-1:
+                num = last-first+1
+        return num
+    def GetFirst(self,data,start,end,k):
+        if start>end:
+            return -1
+        mid = (start+end)//2
+        if data[mid]==k:
+            if mid==0 or data[mid-1]!=k:
+                return mid
+            else:
+                end = mid-1
+        if data[mid]>k:
+            end = mid-1
+        if data[mid]<k:
+            start = mid+1
+        return self.GetFirst(data,start,end,k)
+    def GetLast(self,data,start,end,k):
+        if start>end:
+            return -1
+        mid = (start+end)//2
+        if data[mid]==k:
+            if mid==len(data)-1 or data[mid+1]!=k:
+                return mid
+            else:
+                start = mid+1
+        if data[mid]>k:
+            end = mid-1
+        if data[mid]<k:
+            start = mid+1
+        return self.GetLast(data,start,end,k)
+```
+
+
+
+### 面试题54: 二叉搜索树的第k个节点
+
+#### 题目描述
+
+给定一棵二叉搜索树，请找出其中的第k小的结点。例如， （5，3，7，2，4，6，8）  中，按结点数值大小顺序第三小结点的值为4。
+
+解法：中序遍历
+
+```python
+# -*- coding:utf-8 -*-
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+class Solution:
+    # 返回对应节点TreeNode
+    def KthNode(self, pRoot, k):
+        # write code here
+        global result
+        result=[]
+        self.midnode(pRoot)
+        if  k<=0 or len(result)<k:
+            return None
+        else:
+            return result[k-1]
+             
+    def midnode(self,root):
+        if not root:
+            return None
+        self.midnode(root.left)
+        result.append(root)
+        self.midnode(root.right)
+
+```
+
+
+
+
+
+### 面试题55: 二叉树的深度
+
+#### 题目描述
+
+输入一棵二叉树，求该树的深度。从根结点到叶结点依次经过的结点（含根、叶结点）形成树的一条路径，最长路径的长度为树的深度。
+
+解法：每走到一个子节点+1
+
+```python
+# -*- coding:utf-8 -*-
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+class Solution:
+    def TreeDepth(self, pRoot):
+        # write code here
+        if pRoot==None:
+            return 0
+        left = self.TreeDepth(pRoot.left)+1
+        right = self.TreeDepth(pRoot.right)+1
+        x = max(left,right)
+        return x
+```
+
+
+
+问题二：平衡二叉树
+
+#### 题目描述
+
+输入一棵二叉树，判断该二叉树是否是平衡二叉树。
+
+在这里，我们只需要考虑其平衡性，不需要考虑其是不是排序二叉树
+
+```python
+# -*- coding:utf-8 -*-
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+class Solution:
+    def IsBalanced_Solution(self, pRoot):
+        # write code here
+        if pRoot==None:
+            return True
+        left = self.TreeDepth(pRoot.left)+1
+        right = self.TreeDepth(pRoot.right)+1
+        diff = left - right
+        if diff>1 or diff<-1:
+            return False
+        return self.IsBalanced_Solution(pRoot.left) and self.IsBalanced_Solution(pRoot.right)
+    def TreeDepth(self, pRoot):
+        # write code here
+        if pRoot==None:
+            return 0
+        left = self.TreeDepth(pRoot.left)+1
+        right = self.TreeDepth(pRoot.right)+1
+        x = max(left,right)
+        return x
+```
+
+更优的解法：后序遍历，记录每个节点的深度
+
+### 面试题56: 数组中数字出现的次数
+
+#### 题目描述
+
+数组中只出现过一次的两个数字。
+
+解法：异或
+
+
+
+
+
+### 面试题57: 和为s的两个数字
+
+#### 题目描述
+
+输入一个递增排序的数组和一个数字S，在数组中查找两个数，使得他们的和正好是S，如果有多对数字的和等于S，输出两个数的乘积最小的。
+
+解法：分别从首尾开始扫描
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def FindNumbersWithSum(self, array, tsum):
+        # write code here
+        if len(array)==0:
+            return []
+        start = 0
+        end = len(array)-1
+        while(array[start]+array[end]!=tsum):
+            if start>=end:
+                return []
+            if array[start]+array[end]<tsum:
+                start+=1
+            if array[start]+array[end]>tsum:
+                end-=1
+        return [array[start],array[end]]
+```
+
+
+
+
+
+### 面试题58: 翻转字符串
+
+#### 题目描述
+
+牛客最近来了一个新员工Fish，每天早晨总是会拿着一本英文杂志，写些句子在本子上。同事Cat对Fish写的内容颇感兴趣，有一天他向Fish借来翻看，但却读不懂它的意思。例如，“student. a am I”。后来才意识到，这家伙原来把句子单词的顺序翻转了，正确的句子应该是“I am a student.”。Cat对一一的翻转这些单词顺序可不在行，你能帮助他么？
+
+解法：先翻转句子，再翻转单词
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def ReverseSentence(self, s):
+        # write code here
+        l=s.split(' ')
+        return ' '.join(l[::-1])
+```
+
+(按空格分割，然后逆序join)
+
+### 面试题59: 队列的最大值
+
+#### 题目描述
+
+给定一个数组和滑动窗口的大小，找出所有滑动窗口里数值的最大值。例如，如果输入数组{2,3,4,2,6,2,5,1}及滑动窗口的大小3，那么一共存在6个滑动窗口，他们的最大值分别为{4,4,6,6,6,5}； 针对数组{2,3,4,2,6,2,5,1}的滑动窗口有以下6个： {[2,3,4],2,6,2,5,1}， {2,[3,4,2],6,2,5,1}， {2,3,[4,2,6],2,5,1}， {2,3,4,[2,6,2],5,1}， {2,3,4,2,[6,2,5],1}， {2,3,4,2,6,[2,5,1]}。
+
+窗口大于数组长度的时候，返回空
+
+解法：
+
+1. 将窗口当成队列，用两个栈来保持栈顶的数字为最大值
+2. 删除窗口内不可能成为最大值的数，使得队列头部一直为最大值，注意：存入的是下标
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def maxInWindows(self, num, size):
+        # write code here
+        if len(num) == 0 or size == 0:
+            return []
+        max_num = num[0]
+        dp = []
+        index = 0
+        for i, x in enumerate(num):
+            if x >= max_num:
+                max_num = x
+                index = i
+            else:
+                if i - index >= size:
+                    max_num = num[i]
+                    index = i
+                    for m in range(i - size + 1, i):
+                        if num[m] > max_num:
+                            max_num = num[m]
+                            index = m
+            dp.append(max_num)
+        return dp[size - 1:]
+```
+
+
+
+
+
+### 面试题60: n个骰子的点数
+
+#### 题目描述
+
+把n个骰子扔在地上，所有朝上的面的骰子之和为s，输出所有可能的s的概率
+
+### 面试题61: 扑克牌中的顺子
+
+#### 题目描述
+
+LL今天心情特别好,因为他去买了一副扑克牌,发现里面居然有2个大王,2个小王(一副牌原本是54张^_^)...他随机从中抽出了5张牌,想测测自己的手气,看看能不能抽到顺子,如果抽到的话,他决定去买体育彩票,嘿嘿！！“红心A,黑桃3,小王,大王,方片5”,“Oh My God!”不是顺子.....LL不高兴了,他想了想,决定大\小 王可以看成任何数字,并且A看作1,J为11,Q为12,K为13。上面的5张牌就可以变成“1,2,3,4,5”(大小王分别看作2和4),“So Lucky!”。LL决定去买体育彩票啦。 现在,要求你使用这幅牌模拟上面的过程,然后告诉我们LL的运气如何， 如果牌能组成顺子就输出true，否则就输出false。为了方便起见,你可以认为大小王是0。
+
+解法：先排序，然后补0，有对子存在的话，则不可能是顺子
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def IsContinuous(self, numbers):
+        # 如果扑克牌为空，返回假
+        if not numbers or len(numbers) < 5:
+            return False
+        # write code here
+        numbers.sort()
+        # 输出0的个数
+        zero_num = 0
+        for i in range(0, len(numbers)):
+            if numbers[i] != 0:
+                zero_num = i
+                break
+        # 输出gap的个数
+        start = zero_num
+        next = zero_num + 1
+        end = len(numbers)
+        gap_num = 0
+        while next < end:
+            # 如果出现对子的情况，一定不可能成为顺子
+            if numbers[next] == numbers[start]:
+                return False
+            gap_num += numbers[next] - (numbers[start] + 1)
+            start = next
+            next += 1
+        # 判断能够成为顺子
+        if zero_num >= gap_num:
+            return True
+        return False
+
+```
+
+
+
+### 面试题62: 圆圈中最后剩下的数字
+
+#### 题目描述
+
+每年六一儿童节,牛客都会准备一些小礼物去看望孤儿院的小朋友,今年亦是如此。HF作为牛客的资深元老,自然也准备了一些小游戏。其中,有个游戏是这样的:首先,让小朋友们围成一个大圈。然后,他随机指定一个数m,让编号为0的小朋友开始报数。每次喊到m-1的那个小朋友要出列唱首歌,然后可以在礼品箱中任意的挑选礼物,并且不再回到圈中,从他的下一个小朋友开始,继续0...m-1报数....这样下去....直到剩下最后一个小朋友,可以不用表演,并且拿到牛客名贵的“名侦探柯南”典藏版(名额有限哦!!^_^)。请你试着想下,哪个小朋友会得到这份礼品呢？(注：小朋友的编号是从0到n-1)
+
+如果没有小朋友，请返回-1
+
+解法：解约瑟夫环
+
+1. 环形链表，O(nm)
+2. 创新解法，当 n > 1 时： f(n,m) = [f(n-1, m)+m]%n,当 n = 1 时： f(n,m)=0，*关键是推导出关系表达式*
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def LastRemaining_Solution(self, n, m):
+        # write code here
+        if not m or not n:
+            return -1
+        res = range(n)
+        i = 0
+        while len(res)>1:
+            i = (m+i-1)%len(res)
+            res.pop(i)
+        return res[0]
+```
+
+
+
+
+
+### 面试题63: 股票的最大利润
+
+#### 题目描述
+
+输入股票是一段历史价格，求出买卖一次的最大利润是多少
+
+解法：实际为所有数对的最大差值，通过记录i-1时最低的买入价，来计算当卖出价为i时的最大利润是多少
+
+
+
+### 面试题64: 求1+2+...+n
+
+#### 题目描述
+
+求1+2+3+...+n，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
+
+解法：构造虚函数
+
+```python
+# -*- coding:utf-8 -*-
+class Solution:
+    def __init__(self):
+        self.sum = 0
+    def Sum_Solution(self, n):
+        # write code here
+        def qiusum(n):
+        	self.sum += n
+        	n -= 1
+        	return n>0 and self.Sum_Solution(n)
+        
+        qiusum(n)
+        return self.sum
+
+```
+
+
+
+
+
+### 面试题65: 不用加减乘除做加法
+
+#### 题目描述
+
+写一个函数，求两个整数之和，要求在函数体内不得使用+、-、*、/四则运算符号。
+
+解法：使用位运算
+
+### 面试题66: 构造乘积数组
+
+#### 题目描述
+
+给定一个数组A[0,1,...,n-1],请构建一个数组B[0,1,...,n-1],其中B中的元素B[i]=A[0]*A[1]*...*A[i-1]*A[i+1]*...*A[n-1]。不能使用除法。（注意：规定B[0] = A[1] * A[2] * ... * A[n-1]，B[n-1] = A[0] * A[1] * ... * A[n-2];）
+
+对于A长度为1的情况，B无意义，故而无法构建，因此该情况不会存在。
+
+
+
+### 面试题67: 在排序数组中查找数字
 
 #### 题目描述
 
 
 
-### 面试题53: 数组中出现次数超过一半的数字
-
-#### 题目描述
+#### 
